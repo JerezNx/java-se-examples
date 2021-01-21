@@ -10,6 +10,7 @@
     <modules>
         <module>java-concurrent-examples</module>
         <module>java-net-examples</module>
+        <module>java-io-examples</module>
     </modules>
 
     <build>
