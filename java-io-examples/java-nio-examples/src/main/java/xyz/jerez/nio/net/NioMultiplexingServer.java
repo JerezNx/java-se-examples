@@ -36,18 +36,38 @@ public class NioMultiplexingServer {
                     final SocketChannel client = server.accept();
                     client.configureBlocking(false);
                     client.register(selector, SelectionKey.OP_READ);
-                    System.out.println("add a new connection");
+                    System.out.println("add a new connection:" + client.getRemoteAddress());
                 } else if (selectionKey.isReadable()) {
 //                    5.接收数据
                     final SocketChannel client = (SocketChannel) selectionKey.channel();
                     ByteBuffer buf = ByteBuffer.allocate(1024);
-                    while (client.read(buf) > 0) {
+                    while (true) {
+                        try {
+//                            >0 表示有数据，为0表示没数据，客户端调 shutdownOutput 为-1
+//                            客户端直接断开是直接抛异常
+                            final int dataLength = client.read(buf);
+                            System.out.println("read dataLength:" + dataLength);
+                            if (dataLength == -1) {
+                                client.close();
+                                break;
+                            } else if (dataLength == 0) {
+                                break;
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            client.close();
+                            break;
+                        }
                         buf.flip();
                         System.out.print(StandardCharsets.ISO_8859_1.decode(buf).toString());
                         buf.clear();
                     }
+                    System.out.println();
                     System.out.println("read end");
                 }
+//                selector.selectedKeys() 是在jvm中维护的当前ready的事件
+//                selector.select() 获取到事件后，并非是直接替换 selector.selectedKeys()，而是往内追加，
+//                所以处理完成后需要移除，否则之后下一轮处理时，还会遍历到这个事件，但实际上这时候可能并没有事件
                 iterator.remove();
             }
             System.out.println("wait end");
