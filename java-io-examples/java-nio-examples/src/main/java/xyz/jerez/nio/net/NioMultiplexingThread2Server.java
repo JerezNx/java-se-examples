@@ -35,14 +35,16 @@ public class NioMultiplexingThread2Server {
         ServerSocketChannel server = ServerSocketChannel.open();
 //        server.configureBlocking(false);
         server.bind(new InetSocketAddress(8888));
-
+        final List<Worker> workers = Arrays.asList(new Worker(), new Worker(), new Worker());
+        workers.forEach(worker -> new Thread(worker).start());
+        new Thread(new Listener(server, workers)).start();
     }
 
     static class Listener implements Runnable {
 
         private ServerSocketChannel server;
 
-        private List<Worker> workerList = new ArrayList<>();
+        private List<Worker> workerList;
 
         public Listener(ServerSocketChannel server, List<Worker> workerList) {
             if (server == null || workerList == null || workerList.size() < 2) {
@@ -76,8 +78,8 @@ public class NioMultiplexingThread2Server {
 
         private BlockingQueue<SocketChannel> clientQueue = new LinkedBlockingDeque<>();
 
-        public Worker(Selector selector) {
-            this.selector = selector;
+        public Worker() throws IOException {
+            this.selector = Selector.open();
         }
 
         @Override
@@ -93,7 +95,8 @@ public class NioMultiplexingThread2Server {
                         queueIterator.remove();
                     }
 //                    2.select read
-                    while (selector.select(100) > 0) {
+//                    一定要设置超时，否则新的连接无法被处理
+                    if (selector.select(100) > 0) {
                         final Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
                         while (iterator.hasNext()) {
                             final SelectionKey key = iterator.next();
@@ -120,6 +123,7 @@ public class NioMultiplexingThread2Server {
                             iterator.remove();
                         }
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -128,6 +132,7 @@ public class NioMultiplexingThread2Server {
 
         /**
          * 添加新的socket client
+         *
          * @param client client
          */
         public void addClient(SocketChannel client) {
