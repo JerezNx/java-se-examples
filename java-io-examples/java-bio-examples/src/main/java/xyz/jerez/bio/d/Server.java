@@ -26,6 +26,7 @@ public class Server {
         Socket socket;
         while ((socket = serverSocket.accept()) != null) {
             Socket finalSocket = socket;
+//            使用线程池，而非独自创建线程
             threadPool.execute(() -> {
                 try {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(finalSocket.getInputStream()));

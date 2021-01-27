@@ -12,8 +12,10 @@ import java.net.Socket;
 public class Client {
 
     public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("127.0.0.1",8888);
+//        与 127.0.0.1:8888 建立连接
+        Socket socket = new Socket("127.0.0.1", 8888);
         PrintStream printStream = new PrintStream(socket.getOutputStream());
+//        往服务端发送数据
         printStream.println("zzm");
         printStream.flush();
     }

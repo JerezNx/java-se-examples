@@ -18,6 +18,7 @@ public class Server {
         ServerSocket serverSocket = new ServerSocket(8888);
         while (true) {
             final Socket socket = serverSocket.accept();
+//            每来一个客户端建立连接，就创建一个线程进行处理
             new Thread(() -> {
                 try {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));

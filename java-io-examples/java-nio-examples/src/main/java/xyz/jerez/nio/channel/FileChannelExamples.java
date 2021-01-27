@@ -3,8 +3,11 @@ package xyz.jerez.nio.channel;
 import org.junit.Test;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 
 /**
  * Channel 可同时读写
@@ -54,11 +57,58 @@ public class FileChannelExamples {
 
     @Test
     public void test5() throws IOException {
-        final FileChannel inputChannel = new FileInputStream("src/main/resources/2.txt").getChannel();
-        final FileChannel outputChannel = new FileOutputStream("src/main/resources/3.txt").getChannel();
-//        拷贝文件
+        final FileChannel inputChannel = new FileInputStream("src/main/resources/src.txt").getChannel();
+        final FileChannel outputChannel = new FileOutputStream("src/main/resources/target.txt").getChannel();
+//       不存在8M的限制
 //        inputChannel.transferTo(0, inputChannel.size(), outputChannel);
         outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
         outputChannel.close();
+    }
+
+    /**
+     * windows下一次最多拷贝 8M
+     */
+    @Test
+    public void test6() throws IOException, InterruptedException {
+        final Thread serverThread = new Thread(() -> {
+            try {
+                ServerSocketChannel server = ServerSocketChannel.open();
+                server.bind(new InetSocketAddress(8888));
+                final SocketChannel client = server.accept();
+                ByteBuffer buffer = ByteBuffer.allocate(1024);
+                final FileChannel outputChannel = new FileOutputStream("src/main/resources/target.txt").getChannel();
+                while (client.read(buffer) > 0) {
+                    buffer.flip();
+                    outputChannel.write(buffer);
+                    buffer.clear();
+                }
+                outputChannel.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        serverThread.start();
+
+        final FileChannel inputChannel = new FileInputStream("src/main/resources/src.txt").getChannel();
+        SocketChannel client = SocketChannel.open(new InetSocketAddress("127.0.0.1", 8888));
+        inputChannel.transferTo(0, inputChannel.size(), client);
+        client.shutdownOutput();
+        client.close();
+
+        serverThread.join();
+    }
+
+    /**
+     * 创建一个10M的文件
+     */
+    @Test
+    public void createFile() throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(new FileOutputStream("src/main/resources/src.txt"));
+        String line = "zzm\n";
+        int count = 10 * 1024 * 1024 / 4;
+        for (int i = 0; i < count; i++) {
+            writer.print(line);
+        }
+        writer.close();
     }
 }
