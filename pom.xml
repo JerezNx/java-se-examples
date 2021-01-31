@@ -10,8 +10,18 @@
     <modules>
         <module>java-concurrent-examples</module>
         <module>java-net-examples</module>
+        <module>java-binary-examples</module>
         <module>java-io-examples</module>
+        <module>java-jmx-examples</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
