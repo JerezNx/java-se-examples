@@ -1,4 +1,4 @@
-package xyz.jereznx.se.concurrent;
+package xyz.jereznx.se.concurrent.lock;
 
 import java.util.concurrent.locks.ReentrantLock;
 
