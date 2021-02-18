@@ -26,7 +26,7 @@ public class WaitTest {
             while (true) {
                 synchronized (lock) {
                     System.out.println(3);
-//                必须要notify，虽然运行完会释放锁，但thread会一直wait
+//                    必须要notify，虽然运行完会释放锁，但thread会一直wait
                     lock.notify();
                     Thread.yield();
                     System.out.println(4);

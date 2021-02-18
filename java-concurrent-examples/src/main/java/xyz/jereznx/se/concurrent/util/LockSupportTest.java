@@ -1,5 +1,7 @@
 package xyz.jereznx.se.concurrent.util;
 
+import org.junit.Test;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
@@ -11,7 +13,8 @@ import java.util.concurrent.locks.LockSupport;
  */
 public class LockSupportTest {
 
-    public static void main(String[] args) throws InterruptedException {
+    @Test
+    public void test() throws InterruptedException {
         final Thread thread = new Thread(() -> {
             System.out.println("start");
 //            当前线程睡眠
@@ -25,4 +28,18 @@ public class LockSupportTest {
         LockSupport.unpark(thread);
     }
 
+    @Test
+    public void test1() throws InterruptedException {
+        final Thread thread = new Thread(() -> {
+            System.out.println("start");
+//            当前线程睡眠
+            LockSupport.park();
+            System.out.println("end");
+        });
+        thread.start();
+
+        TimeUnit.SECONDS.sleep(5);
+//        interrupt 也会终止 park
+        thread.interrupt();
+    }
 }
