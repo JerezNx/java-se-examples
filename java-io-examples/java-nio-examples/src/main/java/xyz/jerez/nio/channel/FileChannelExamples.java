@@ -70,6 +70,7 @@ public class FileChannelExamples {
      */
     @Test
     public void test6() throws IOException, InterruptedException {
+        //noinspection AlibabaAvoidManuallyCreateThread
         final Thread serverThread = new Thread(() -> {
             try {
                 ServerSocketChannel server = ServerSocketChannel.open();
