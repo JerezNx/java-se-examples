@@ -48,4 +48,8 @@ public class Print {
         thread2.interrupt();
     }
 
+    public String printString(String a, String b) {
+        return a + b;
+    }
+
 }

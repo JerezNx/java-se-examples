@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
  * @author LQL
  * @since Create in 2021/2/28 16:40
  */
+@SuppressWarnings("ALL")
 public class SynchronizedTest {
 
     public static void main(String[] args) throws Exception {

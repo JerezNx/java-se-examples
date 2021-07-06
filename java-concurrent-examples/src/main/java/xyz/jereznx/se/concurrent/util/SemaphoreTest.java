@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author LQL
  * @since Create in 2021/2/11 13:56
  */
+@SuppressWarnings("AlibabaAvoidManuallyCreateThread")
 public class SemaphoreTest {
 
     @Test

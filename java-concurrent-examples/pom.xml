@@ -13,6 +13,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>xyz.jereznx</groupId>
+            <artifactId>java-logger-examples</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjdk.jol</groupId>
             <artifactId>jol-core</artifactId>
             <version>0.9</version>

@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
  * @author LQL
  * @since Create in 2021/2/11 13:40
  */
+@SuppressWarnings("AlibabaAvoidManuallyCreateThread")
 public class CyclicBarrierTest {
 
     public static void main(String[] args) {

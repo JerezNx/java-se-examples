@@ -1,4 +1,4 @@
-package xyz.jereznx.se.concurrent.lock;
+package xyz.jereznx.se.concurrent.aqs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -8,37 +8,74 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * @author LQL
- * @since Create in 2020/8/31 23:44
+ * @author liqilin
+ * @since 2021/2/18 14:29
  */
 @SuppressWarnings("ALL")
 @Slf4j
-public class ReentrantLockTest {
+public class AqsOfReentrantLockTest {
 
+    @SuppressWarnings("AlibabaAvoidManuallyCreateThread")
     @Test
-    public void t1() {
-        ReentrantLock lock = new ReentrantLock();
-
-        new Thread(() -> {
-            final int n = 3;
-            for (int i = 1; i <= n; i++) {
+    public void test() throws InterruptedException {
+        ReentrantLock lock = new ReentrantLock(true);
+        Thread[] threads = new Thread[2];
+        for (int i = 0; i < threads.length; i++) {
+            threads[i] = new Thread(() -> {
                 lock.lock();
-            }
-
-            for (int i = 1; i <= n - 1; i++) {
                 try {
-                    System.out.println(i);
+                    log.info(Thread.currentThread().getName() + " lock");
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (Exception e) {
+                    log.error("", e);
                 } finally {
                     lock.unlock();
+                    log.info(Thread.currentThread().getName() + " unlock");
                 }
-            }
-        }).start();
+            });
+            threads[i].setName("t" + i);
+        }
 
-        new Thread(() -> {
-            lock.lock();
-            System.out.println("end");
-            lock.unlock();
-        }).start();
+        threads[0].start();
+        TimeUnit.SECONDS.sleep(1);
+        threads[1].start();
+        TimeUnit.SECONDS.sleep(1);
+//        threads[1].interrupt();
+        for (Thread thread : threads) {
+            thread.join();
+        }
+    }
+
+    @SuppressWarnings("AlibabaAvoidManuallyCreateThread")
+    @Test
+    public void test1() throws InterruptedException {
+        MyReentrantLock lock = new MyReentrantLock();
+        Thread[] threads = new Thread[2];
+        for (int i = 0; i < threads.length; i++) {
+            threads[i] = new Thread(() -> {
+                lock.lock();
+                try {
+                    log.info(Thread.currentThread().getName() + " lock");
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (Exception e) {
+                    log.error("", e);
+                } finally {
+                    lock.unlock();
+                    log.info(Thread.currentThread().getName() + " unlock");
+                }
+            });
+            threads[i].setName("t" + i);
+        }
+
+        threads[0].start();
+        TimeUnit.SECONDS.sleep(1);
+        threads[1].start();
+        TimeUnit.SECONDS.sleep(1);
+        MyReentrantLock.exceptionSwitch = true;
+        threads[1].interrupt();
+        for (Thread thread : threads) {
+            thread.join();
+        }
     }
 
     /**
@@ -50,6 +87,7 @@ public class ReentrantLockTest {
      * signal 是唤醒队列中第一个线程
      * signalAll 是唤醒所有，然后争抢
      */
+    @SuppressWarnings("DuplicatedCode")
     @Test
     public void condition() throws InterruptedException {
         ReentrantLock lock = new ReentrantLock();
@@ -100,4 +138,9 @@ public class ReentrantLockTest {
         t.join();
     }
 
+    @Test
+    public void overflow() {
+//        -2147483648
+        System.out.println(Integer.MAX_VALUE + 1);
+    }
 }
