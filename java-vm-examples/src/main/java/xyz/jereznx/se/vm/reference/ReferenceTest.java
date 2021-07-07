@@ -107,8 +107,8 @@ public class ReferenceTest {
     @Test
     public void testWeakReference() {
         WeakReference ref = new WeakReference<>(new MyDate());
-//        System.gc();
         System.out.println(ref.get());
+//        System.gc();
         ReferenceTest.drainMemory();
 //        null
         System.out.println(ref.get());
@@ -155,7 +155,7 @@ public class ReferenceTest {
     /**
      * 消耗大量内存
      */
-    private static void drainMemory() {
+    public static void drainMemory() {
         String[] array = new String[1024 * 10];
         for (int i = 0; i < 1024 * 10; i++) {
             for (int j = 'a'; j <= 'z'; j++) {

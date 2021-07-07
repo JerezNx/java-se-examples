@@ -3,6 +3,7 @@ package xyz.jereznx.se.vm.object;
 import org.junit.Test;
 import org.openjdk.jol.info.ClassLayout;
 import org.openjdk.jol.vm.VM;
+import xyz.jereznx.se.vm.reference.ReferenceTest;
 
 /**
  * 对象由3部分组成： object header | 实例数据 | 补齐
@@ -61,6 +62,25 @@ public class ObjectTest {
         System.out.println(ClassLayout.parseInstance(new Object()).toPrintable());
 //        基础类型会变成包装类型
         System.out.println(ClassLayout.parseInstance(1).toPrintable());
+    }
+
+    /**
+     * -XX:+PrintGCDetails
+     * 第4、5位为gc年龄
+     */
+    @Test
+    public void t4() {
+        Object object = new Object();
+        System.out.println(ClassLayout.parseInstance(object).toPrintable());
+        System.gc();
+        System.out.println(ClassLayout.parseInstance(object).toPrintable());
+        System.gc();
+//        todo 为何后续的gc不会增长年龄了？
+        System.out.println(ClassLayout.parseInstance(object).toPrintable());
+        ReferenceTest.drainMemory();
+        System.out.println(ClassLayout.parseInstance(object).toPrintable());
+        ReferenceTest.drainMemory();
+        System.out.println(ClassLayout.parseInstance(object).toPrintable());
     }
 
 
