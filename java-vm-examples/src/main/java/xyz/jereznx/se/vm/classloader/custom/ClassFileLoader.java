@@ -12,7 +12,15 @@ import java.net.URLClassLoader;
 public class ClassFileLoader extends URLClassLoader {
 
     public ClassFileLoader(String filePath) throws MalformedURLException {
-        super(new URL[]{new File(filePath).toURI().toURL()});
+        this(filePath, ClassFileLoader.class.getClassLoader());
     }
 
+    public ClassFileLoader(String filePath, ClassLoader parent) throws MalformedURLException {
+        super(new URL[]{new File(filePath).toURI().toURL()}, parent);
+    }
+
+    @Override
+    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        return super.loadClass(name, resolve);
+    }
 }
